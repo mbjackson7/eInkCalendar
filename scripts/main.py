@@ -17,7 +17,7 @@ import traceback
 import feedparser
 from datetime import datetime
 
-from nyt import get_stories
+from news import get_news_widget
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -50,7 +50,7 @@ try:
     red_Channel = ImageDraw.Draw(Limage_Other)
     
     logging.info("Prepping Widgets")
-    get_stories(displayWidth, 200, 0, 0, red_Channel, black_Channel, notoSans24, notoSans18)
+    get_news_widget(displayWidth, 200, 0, 0, red_Channel, black_Channel, notoSans24, notoSans18)
 
     logging.info("Displaying")
     epd.display(epd.getbuffer(Limage),epd.getbuffer(Limage_Other))

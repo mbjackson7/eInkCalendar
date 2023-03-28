@@ -33,7 +33,8 @@ def split_at_space(s, width, font, channel):
     lines.append(line)
     spaced_line = "\n".join(lines)
     return spaced_line
-def get_stories(width: int, height: int, x: int, y: int, red_Channel: ImageDraw, black_Channel: ImageDraw, font24, font18):
+
+def get_news_widget(width: int, height: int, x: int, y: int, red_Channel: ImageDraw, black_Channel: ImageDraw, font24, font18):
     try:   
         nyt_top_stories_url = 'https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml'
         nyt_politics_url = 'https://rss.nytimes.com/services/xml/rss/nyt/Politics.xml'
