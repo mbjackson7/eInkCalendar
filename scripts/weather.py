@@ -22,11 +22,12 @@ config = dotenv_values(".env")
 
 logging.basicConfig(level=logging.DEBUG)
 
-def get_weather(width: int, height: int, x: int, y: int, red_Channel: ImageDraw, black_Channel: ImageDraw, font24, font18):
+def get_weather_widget(width: int, height: int, x: int, y: int, red_Channel: ImageDraw, black_Channel: ImageDraw, font24, font18):
     try:   
-        apiURL = f"https://api.openweathermap.org/data/2.5/weather?lat={config.lat}&lon={config.long}&appid={config.weatherKey}&units=imperial"
+        apiURL = f"https://api.openweathermap.org/data/2.5/weather?lat={config.lat}&lon={config.long}&appid={config.weatherKey}&units={config.units}"
         response = requests.get(apiURL)
         data = response.json()
+
     
     except IOError as e:
         logging.info(e)
