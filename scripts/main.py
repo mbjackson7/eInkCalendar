@@ -21,6 +21,7 @@ from weather import get_weather_widget, get_forecast_widget
 
 logging.basicConfig(level=logging.DEBUG)
 
+VERSION = "v0.0.1"
 SCREEN_ORIENTATION = "v"
 
 try:
@@ -47,6 +48,7 @@ try:
     red_Channel = ImageDraw.Draw(Limage_Other)
     
     logging.info("Prepping Widgets")
+    black_Channel.text((0, displayHeight-20), VERSION, font = notoSans18, fill = 0)
     get_news_widget(380, 200, 0, 0, red_Channel, black_Channel, notoSans24, notoSans18)
     get_weather_widget(100, 200, 380, 0, red_Channel, black_Channel, notoSans48)
     get_forecast_widget(displayWidth, 150, 0, 200, red_Channel, black_Channel, notoSans24)
