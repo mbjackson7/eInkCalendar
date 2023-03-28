@@ -14,6 +14,8 @@ if os.path.exists(libdir):
 import logging
 from waveshare_epd import epd7in5b_V2
 import time
+from datetime import datetime
+from dateutil import tz
 from PIL import Image,ImageDraw,ImageFont
 import PIL.ImageOps
 import traceback
@@ -28,6 +30,9 @@ def temp_string(temp: float, units: str):
         return f"{temp}°F"
     else:
         return f"{temp}°C"
+    
+def utc_to_local(utc_dt):
+    return utc_dt.replace(tzinfo=tz.tzutc()).astimezone(tz.tzlocal())
 
 def get_weather_widget(width: int, height: int, x: int, y: int, red_Channel: ImageDraw, black_Channel: ImageDraw, font48):
     try:   
@@ -99,7 +104,12 @@ def get_forecast_widget(width: int, height: int, x: int, y: int, red_Channel: Im
             for i in range(numS, numR):
                 temp = data['list'][i]['main']['temp']
                 icon = data['list'][i]['weather'][0]['icon']
-                time = data['list'][i]['dt_txt'][11:16]
+                dateStr = data['list'][i]['dt_txt']
+                utc = datetime.strptime(dateStr, '%Y-%m-%d %H:%M:%S')
+                local = utc_to_local(utc)
+                time = local.strftime("%I %p")
+                if time[0] == "0":
+                    time = time[1:]
                 timeLen = font24.getlength(time)
                 timeX = xOffset + (100 - timeLen) / 2
                 black_Channel.text((timeX + x, yOffset + y + rowOffset), time, font = font24, fill = 0)
