@@ -7,6 +7,7 @@ fontdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__
 weatherdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'pic/weather')
 libdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'lib')
 widgetdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'widgets')
+scriptsdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'scripts')
 if os.path.exists(libdir):
     sys.path.append(libdir)
 
@@ -31,7 +32,7 @@ def temp_string(temp: float, units: str):
 def get_weather_widget(width: int, height: int, x: int, y: int, red_Channel: ImageDraw, black_Channel: ImageDraw, font48):
     try:   
         # load json file into a dictionary
-        with open('config.json') as json_file:
+        with open(os.path.join(scriptsdir, 'config.json')) as json_file:
             config = json.load(json_file)        
 
         apiURL = f"https://api.openweathermap.org/data/2.5/weather?lat={config['lat']}&lon={config['long']}&appid={config['weatherKey']}&units={config['units']}"
@@ -73,7 +74,7 @@ def get_weather_widget(width: int, height: int, x: int, y: int, red_Channel: Ima
 def get_forecast_widget(width: int, height: int, x: int, y: int, red_Channel: ImageDraw, black_Channel: ImageDraw, font24):
     try:   
         # load json file into a dictionary
-        with open('config.json') as json_file:
+        with open(os.path.join(scriptsdir, 'config.json')) as json_file:
             config = json.load(json_file)        
 
         apiURL = f"https://api.openweathermap.org/data/2.5/forecast?lat={config['lat']}&lon={config['long']}&appid={config['weatherKey']}&units={config['units']}"
