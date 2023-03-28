@@ -81,36 +81,43 @@ def get_forecast_widget(width: int, height: int, x: int, y: int, red_Channel: Im
         response = requests.get(apiURL)
         data = response.json()
 
-        xOffset = (width % 100) / 2
-        if height >= 140:
-            yOffset = (height - 140) / 2
-        else:
-            yOffset = (height - 40) / 2
-        num = width // 100
-        temp = 0
-        icon = ""
-        for i in range(num):
-            temp = data['list'][i]['main']['temp']
-            icon = data['list'][i]['weather'][0]['icon']
-            time = data['list'][i]['dt_txt'][11:16]
-            timeLen = font24.getlength(time)
-            timeX = xOffset + (100 - timeLen) / 2
-            black_Channel.text((timeX, yOffset + y), time, font = font24, fill = 0)
-            rawTempStr = str(temp)
-            tempStr = f"{rawTempStr.split('.')[0]}°"
-            tempLen = font24.getlength(tempStr)
-            tempX = xOffset + (100 - tempLen) / 2
-            black_Channel.text((tempX, yOffset + y + 30), tempStr, font = font24, fill = 0)
+        rowCount = height // 140
+        if rowCount == 0:
+            rowCount = 1
+        for r in range(rowCount):
+            rowOffset = r * 140
+            xOffset = (width % 100) / 2
             if height >= 140:
-                if os.path.isfile(os.path.join(weatherdir, icon + ".bmp")):
-                    iconImg = Image.open(os.path.join(weatherdir, icon + ".bmp")).convert('L')
-                    iconImg = PIL.ImageOps.invert(iconImg)
-                    black_Channel.bitmap((xOffset + x, yOffset + y + 40), iconImg, fill = 0)
-                if os.path.isfile(os.path.join(weatherdir, icon + "r.bmp")):
-                    iconImg = Image.open(os.path.join(weatherdir, icon + "r.bmp")).convert('L')
-                    iconImg = PIL.ImageOps.invert(iconImg)
-                    red_Channel.bitmap((xOffset + x, yOffset + y + 40), iconImg, fill = 0)
-            xOffset += 100
+                yOffset = (height % 140) / 2
+            else:
+                yOffset = (height - 40) / 2
+            num = width // 100
+            numS = num * r
+            numR = numS + num
+            temp = 0
+            icon = ""
+            for i in range(numS, numR):
+                temp = data['list'][i]['main']['temp']
+                icon = data['list'][i]['weather'][0]['icon']
+                time = data['list'][i]['dt_txt'][11:16]
+                timeLen = font24.getlength(time)
+                timeX = xOffset + (100 - timeLen) / 2
+                black_Channel.text((timeX + x, yOffset + y + rowOffset), time, font = font24, fill = 0)
+                rawTempStr = str(temp)
+                tempStr = f"{rawTempStr.split('.')[0]}°"
+                tempLen = font24.getlength(tempStr)
+                tempX = xOffset + (100 - tempLen) / 2
+                black_Channel.text((tempX + x, yOffset + y + 30 + rowOffset), tempStr, font = font24, fill = 0)
+                if height >= 140:
+                    if os.path.isfile(os.path.join(weatherdir, icon + ".bmp")):
+                        iconImg = Image.open(os.path.join(weatherdir, icon + ".bmp")).convert('L')
+                        iconImg = PIL.ImageOps.invert(iconImg)
+                        black_Channel.bitmap((xOffset + x, yOffset + y + 40 + rowOffset), iconImg, fill = 0)
+                    if os.path.isfile(os.path.join(weatherdir, icon + "r.bmp")):
+                        iconImg = Image.open(os.path.join(weatherdir, icon + "r.bmp")).convert('L')
+                        iconImg = PIL.ImageOps.invert(iconImg)
+                        red_Channel.bitmap((xOffset + x, yOffset + y + 40 + rowOffset), iconImg, fill = 0)
+                xOffset += 100
           
     except IOError as e:
         logging.info(e)
