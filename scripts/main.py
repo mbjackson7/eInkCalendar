@@ -14,10 +14,10 @@ from waveshare_epd import epd7in5b_V2
 import time
 from PIL import Image,ImageDraw,ImageFont
 import traceback
-import feedparser
 from datetime import datetime
 
 from news import get_news_widget
+from weather import get_weather_widget, get_forecast_widget
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -35,12 +35,9 @@ try:
         displayWidth = epd.width
         displayHeight = epd.height  
 
-    logging.info("init and Clear")
-    epd.init()
-    epd.Clear()
-
     font24 = ImageFont.truetype(os.path.join(fontdir, 'Font.ttc'), 24)
     font18 = ImageFont.truetype(os.path.join(fontdir, 'Font.ttc'), 18)
+    notoSans48 = ImageFont.truetype(os.path.join(fontdir, 'NotoSans/NotoSans-SemiCondensedMedium.ttf'), 48)
     notoSans24 = ImageFont.truetype(os.path.join(fontdir, 'NotoSans/NotoSans-SemiCondensedMedium.ttf'), 24)
     notoSans18 = ImageFont.truetype(os.path.join(fontdir, 'NotoSans/NotoSans-SemiCondensedMedium.ttf'), 18)
 
@@ -50,7 +47,14 @@ try:
     red_Channel = ImageDraw.Draw(Limage_Other)
     
     logging.info("Prepping Widgets")
-    get_news_widget(displayWidth, 200, 0, 0, red_Channel, black_Channel, notoSans24, notoSans18)
+    get_news_widget(380, 200, 0, 0, red_Channel, black_Channel, notoSans24, notoSans18)
+    get_weather_widget(100, 200, 380, 0, red_Channel, black_Channel, notoSans48)
+    get_forecast_widget(displayWidth, 150, 0, 200, red_Channel, black_Channel, notoSans24)
+    
+
+    logging.info("init and Clear")
+    epd.init()
+    epd.Clear()
 
     logging.info("Displaying")
     epd.display(epd.getbuffer(Limage),epd.getbuffer(Limage_Other))
