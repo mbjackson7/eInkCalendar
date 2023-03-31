@@ -1,3 +1,12 @@
 venv
 .env
 config.json
+credentials.json
+
+# Fonts
+ComicSansMS
+helvetica.ttf
+
+# Google Credentials
+credentials.json
+token.json
