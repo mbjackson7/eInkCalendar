@@ -33,7 +33,7 @@ def init_credentials():
         config = json.load(json_file)   
 
     with open(os.path.join(scriptsdir, 'token.json')) as json_file:
-        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+        creds = Credentials.from_authorized_user_file(os.path.join(scriptsdir, 'token.json'), SCOPES)
         
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
