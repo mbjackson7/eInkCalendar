@@ -18,6 +18,7 @@ from datetime import datetime
 
 from news import get_news_widget
 from weather import get_weather_widget, get_forecast_widget
+from gCalendar import get_event_list
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -41,6 +42,13 @@ try:
     notoSans48 = ImageFont.truetype(os.path.join(fontdir, 'NotoSans/NotoSans-SemiCondensedMedium.ttf'), 48)
     notoSans24 = ImageFont.truetype(os.path.join(fontdir, 'NotoSans/NotoSans-SemiCondensedMedium.ttf'), 24)
     notoSans18 = ImageFont.truetype(os.path.join(fontdir, 'NotoSans/NotoSans-SemiCondensedMedium.ttf'), 18)
+    notoBold24 = ImageFont.truetype(os.path.join(fontdir, 'NotoSans/NotoSans-SemiCondensedSemiBold.ttf'), 24)
+    notoBold18 = ImageFont.truetype(os.path.join(fontdir, 'NotoSans/NotoSans-SemiCondensedSemiBold.ttf'), 18)
+    comicSans24 = ImageFont.truetype(os.path.join(fontdir, 'ComicSansMS/comic.ttf'), 24)
+    comicSans18 = ImageFont.truetype(os.path.join(fontdir, 'ComicSansMS/comic.ttf'), 18)
+    helvetica48 = ImageFont.truetype(os.path.join(fontdir, 'helvetica.ttf'), 48)
+    helvetica24 = ImageFont.truetype(os.path.join(fontdir, 'helvetica.ttf'), 24)
+    helvetica18 = ImageFont.truetype(os.path.join(fontdir, 'helvetica.ttf'), 18)
 
     Limage = Image.new('1', (displayWidth, displayHeight), 255)  # 255: clear the frame
     Limage_Other = Image.new('1', (displayWidth, displayHeight), 255)  # 255: clear the frame
@@ -48,17 +56,15 @@ try:
     red_Channel = ImageDraw.Draw(Limage_Other)
     
     logging.info("Prepping Widgets")
-    black_Channel.text((0, displayHeight-20), VERSION, font = notoSans18, fill = 0)
-    get_news_widget(380, 200, 0, 0, red_Channel, black_Channel, notoSans24, notoSans18)
-    get_weather_widget(100, 200, 380, 0, red_Channel, black_Channel, notoSans48)
-    get_forecast_widget(100, 600, 380, 200, red_Channel, black_Channel, notoSans24)
-    
-
-    logging.info("init and Clear")
-    epd.init()
-    epd.Clear()
+    black_Channel.text((0, displayHeight-20), VERSION, font = helvetica18, fill = 0)
+    get_news_widget(380, 380, 0, 0, red_Channel, black_Channel, helvetica24, helvetica24)
+    get_weather_widget(100, 200, 380, 0, red_Channel, black_Channel, helvetica48)
+    get_forecast_widget(100, 600, 380, 180, red_Channel, black_Channel, helvetica24)
+    get_event_list(380, 400, 0, 380, red_Channel, black_Channel, notoSans24, notoSans18, notoBold18)
+    #get_calendar_widget(displayWidth, 580, 0, 200, red_Channel, black_Channel, comicSans24, comicSans18)
 
     logging.info("Displaying")
+    epd.init()
     epd.display(epd.getbuffer(Limage),epd.getbuffer(Limage_Other))
 
     logging.info("Goto Sleep...")
