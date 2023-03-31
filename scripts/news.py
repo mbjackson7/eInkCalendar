@@ -32,6 +32,7 @@ def split_at_space(s, width, font, channel):
             line += ' ' + word
     lines.append(line)
     spaced_line = "\n".join(lines)
+    spaced_line = spaced_line[1:]
     return spaced_line
 
 def get_news_widget(width: int, height: int, x: int, y: int, red_Channel: ImageDraw, black_Channel: ImageDraw, font24, font18):
