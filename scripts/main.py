@@ -64,7 +64,7 @@ try:
     get_news_widget(380, 240, 0, 0, red_Channel, black_Channel, helvetica24, helvetica24)
     get_weather_widget(100, 200, 380, 0, red_Channel, black_Channel, helvetica48)
     get_forecast_widget(100, 600, 380, 180, red_Channel, black_Channel, helvetica24)
-    get_countdown_list(380, 540, 0, 380, red_Channel, black_Channel, notoSans24, notoSans18, notoBold18, config["calendarID1"])
+    get_countdown_list(380, 540, 0, 240, red_Channel, black_Channel, notoSans24, notoSans18, notoBold18, config["calendarID1"])
     #get_calendar_widget(displayWidth, 580, 0, 200, red_Channel, black_Channel, comicSans24, comicSans18)
 
     logging.info("Displaying")
