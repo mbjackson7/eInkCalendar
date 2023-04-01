@@ -168,9 +168,17 @@ def get_countdown_list(width: int, height: int, x: int, y: int, red_Channel: Ima
         # Prints the start and name of the next 10 events
         color = False
         currY = y + 2
+        unopened = []
         for event in events:
             start = event['start'].get('dateTime', event['start'].get('date'))
             summary = event['summary']
+            if summary[0:5] == "OPENS":
+                unopened.append(summary[6:])
+                continue
+            if summary in unopened:
+                continue
+            if summary[0:4] == "DONE":
+                continue
             startY = currY
             daysUntil = int((datetime.strptime(start[0:10], "%Y-%m-%d") - datetime.now()).days) + 1
             currY = black_Channel.textbbox((x+2, currY), f"{daysUntil} Days Til: {summary}", font = font24)[3] 
