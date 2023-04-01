@@ -62,6 +62,16 @@ def split_at_space(s, width, font, channel):
     spaced_line = spaced_line[1:]
     return spaced_line
 
+def shorten_string(s, width, font, channel):
+    shortened = False
+    while channel.textlength(s, font) >= width-4:
+        shortened = True
+        s = s[:-1]
+    if shortened:
+        while channel.textlength(s + "...", font) >= width-4:
+            s = s[:-1]
+    return s + "..." if shortened else s
+
 def military_to_standard(time):
     if time[0:2] == "00":
         return "12" + time[2:] + " AM"
@@ -72,7 +82,7 @@ def military_to_standard(time):
     else:
         return time + " AM"
 
-def get_event_list(width: int, height: int, x: int, y: int, red_Channel: ImageDraw, black_Channel: ImageDraw, font24, font18, font18bold):
+def get_event_list(width: int, height: int, x: int, y: int, red_Channel: ImageDraw, black_Channel: ImageDraw, font24, font18, font18bold, calendarID: str = "primary"):
     try:
         creds = init_credentials()
         service = build('calendar', 'v3', credentials=creds)
@@ -80,7 +90,7 @@ def get_event_list(width: int, height: int, x: int, y: int, red_Channel: ImageDr
         # Call the Calendar API
         now = datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
         print('Getting the upcoming 30 events')
-        events_result = service.events().list(calendarId='primary', timeMin=now,
+        events_result = service.events().list(calendarId=calendarID, timeMin=now,
                                               maxResults=20, singleEvents=True,
                                               orderBy='startTime').execute()
         events = events_result.get('items', [])
@@ -129,6 +139,49 @@ def get_event_list(width: int, height: int, x: int, y: int, red_Channel: ImageDr
             currY += 5
 
 
+
+    except IOError as e:
+        logging.info(e)
+        
+    except KeyboardInterrupt:    
+        logging.info("ctrl + c:")
+        epd7in5b_V2.epdconfig.module_exit()
+        exit()
+
+def get_countdown_list(width: int, height: int, x: int, y: int, red_Channel: ImageDraw, black_Channel: ImageDraw, font24, font18, font18bold, calendarID: str = "primary"):
+    try:
+        creds = init_credentials()
+        service = build('calendar', 'v3', credentials=creds)
+
+        # Call the Calendar API
+        now = datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
+        print('Getting the upcoming 30 events')
+        events_result = service.events().list(calendarId=calendarID, timeMin=now,
+                                              maxResults=20, singleEvents=True,
+                                              orderBy='startTime').execute()
+        events = events_result.get('items', [])
+
+        if not events:
+            print('No upcoming events found.')
+            return
+
+        # Prints the start and name of the next 10 events
+        color = False
+        currY = y + 2
+        for event in events:
+            start = event['start'].get('dateTime', event['start'].get('date'))
+            summary = event['summary']
+            startY = currY
+            daysUntil = int((datetime.strptime(start[0:10], "%Y-%m-%d") - datetime.now()).days) + 1
+            currY = black_Channel.textbbox((x+2, currY), f"{daysUntil} Days Til: {summary}", font = font24)[3] 
+            formattedLine = shorten_string(f"{daysUntil} Days Til: {summary}", width, font24, black_Channel)
+            if currY <= height + y - 2:
+                if color:
+                    black_Channel.text((x+2, startY), formattedLine, font = font24, fill = 0)
+                else:
+                    red_Channel.text((x+2, startY), formattedLine, font = font24, fill = 0)
+            currY += 5
+            color = not color
 
     except IOError as e:
         logging.info(e)
