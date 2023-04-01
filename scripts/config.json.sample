@@ -2,5 +2,6 @@
   "weatherKey": "",
   "lat": ,
   "long": ,
-  "units": ""
+  "units": "",
+  "calendarID1": "add as many of these as you need for your layout"
 }
