@@ -155,14 +155,14 @@ def get_countdown_list(width: int, height: int, x: int, y: int, red_Channel: Ima
 
         # Call the Calendar API
         now = datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
-        print('Getting the upcoming 30 events')
+        logging.info('Getting the upcoming 40 events')
         events_result = service.events().list(calendarId=calendarID, timeMin=now,
-                                              maxResults=20, singleEvents=True,
+                                              maxResults=40, singleEvents=True,
                                               orderBy='startTime').execute()
         events = events_result.get('items', [])
 
         if not events:
-            print('No upcoming events found.')
+            logging.info('No upcoming events found.')
             return
 
         # Prints the start and name of the next 10 events
