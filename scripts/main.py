@@ -5,7 +5,6 @@ import os
 picdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'pic')
 fontdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'pic/fonts')
 libdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'lib')
-widgetdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'widgets')
 scriptsdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'scripts')
 if os.path.exists(libdir):
     sys.path.append(libdir)
@@ -26,9 +25,6 @@ logging.basicConfig(level=logging.DEBUG)
 
 VERSION = "v0.0.1"
 SCREEN_ORIENTATION = "v"
-
-with open(os.path.join(scriptsdir, 'config.json')) as json_file:
-    config = json.load(json_file) 
 
 try:
     logging.info("Displaying HUD")
@@ -61,11 +57,14 @@ try:
     red_Channel = ImageDraw.Draw(Limage_Other)
     
     logging.info("Prepping Widgets")
+    with open(os.path.join(scriptsdir, 'config.json')) as json_file:
+        config = json.load(json_file)     
+
     black_Channel.text((0, displayHeight-20), VERSION, font = helvetica18, fill = 0)
-    get_news_widget(380, 380, 0, 0, red_Channel, black_Channel, helvetica24, helvetica24)
+    get_news_widget(380, 240, 0, 0, red_Channel, black_Channel, helvetica24, helvetica24)
     get_weather_widget(100, 200, 380, 0, red_Channel, black_Channel, helvetica48)
     get_forecast_widget(100, 600, 380, 180, red_Channel, black_Channel, helvetica24)
-    get_countdown_list(380, 400, 0, 380, red_Channel, black_Channel, notoSans24, notoSans18, notoBold18, config.calendarID1)
+    get_countdown_list(380, 540, 0, 380, red_Channel, black_Channel, notoSans24, notoSans18, notoBold18, config["calendarID1"])
     #get_calendar_widget(displayWidth, 580, 0, 200, red_Channel, black_Channel, comicSans24, comicSans18)
 
     logging.info("Displaying")
