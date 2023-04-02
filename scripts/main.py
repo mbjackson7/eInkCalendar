@@ -6,6 +6,7 @@ picdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__)
 fontdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'pic/fonts')
 libdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'lib')
 scriptsdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'scripts')
+screenshotsdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'screenshots')
 if os.path.exists(libdir):
     sys.path.append(libdir)
 
@@ -13,6 +14,7 @@ import logging
 from waveshare_epd import epd7in5b_V2
 import time
 from PIL import Image,ImageDraw,ImageFont
+import PIL.ImageOps
 import traceback
 from datetime import datetime
 import json
@@ -25,6 +27,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 VERSION = "v0.0.1"
 SCREEN_ORIENTATION = "v"
+EXPORT_SCREENSHOTS = True
 
 try:
     logging.info("Displaying HUD")
@@ -73,6 +76,17 @@ try:
 
     logging.info("Goto Sleep...")
     epd.sleep()
+    
+    if EXPORT_SCREENSHOTS:
+        logging.info("Exporting Image")
+        blackMask = PIL.ImageOps.invert(Limage)
+        redMask = PIL.ImageOps.invert(Limage_Other)
+        canvas = Image.new('RGB', (displayWidth, displayHeight), (255, 255, 255))
+        black = Image.new('RGB', (displayWidth, displayHeight), (0, 0, 0))
+        red = Image.new('RGB', (displayWidth, displayHeight), (255, 0, 0))
+        canvas.paste(black, mask=blackMask)
+        canvas.paste(red, mask=redMask)
+        canvas.save(os.path.join(screenshotsdir, f'{str(datetime.now())}.png'))
     
 except IOError as e:
     logging.info(e)
