@@ -27,7 +27,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 VERSION = "v0.0.1"
 SCREEN_ORIENTATION = "v"
-EXPORT_SCREENSHOTS = True
+EXPORT_SCREENSHOTS = False
 
 try:
     logging.info("Displaying HUD")
