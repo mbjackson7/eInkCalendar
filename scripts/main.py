@@ -22,6 +22,7 @@ import json
 from news import get_news_widget
 from weather import get_weather_widget, get_forecast_widget
 from gCalendar import get_event_list, get_countdown_list
+from header import get_header_widget
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -44,6 +45,8 @@ try:
     font24 = ImageFont.truetype(os.path.join(fontdir, 'Font.ttc'), 24)
     font18 = ImageFont.truetype(os.path.join(fontdir, 'Font.ttc'), 18)
     notoSans48 = ImageFont.truetype(os.path.join(fontdir, 'NotoSans/NotoSans-SemiCondensedMedium.ttf'), 48)
+    notoSans32 = ImageFont.truetype(os.path.join(fontdir, 'NotoSans/NotoSans-SemiCondensedMedium.ttf'), 32)
+    notoSans28 = ImageFont.truetype(os.path.join(fontdir, 'NotoSans/NotoSans-SemiCondensedMedium.ttf'), 28)
     notoSans24 = ImageFont.truetype(os.path.join(fontdir, 'NotoSans/NotoSans-SemiCondensedMedium.ttf'), 24)
     notoSans18 = ImageFont.truetype(os.path.join(fontdir, 'NotoSans/NotoSans-SemiCondensedMedium.ttf'), 18)
     notoBold24 = ImageFont.truetype(os.path.join(fontdir, 'NotoSans/NotoSans-SemiCondensedSemiBold.ttf'), 24)
@@ -64,11 +67,12 @@ try:
         config = json.load(json_file)     
 
     black_Channel.text((0, displayHeight-20), VERSION, font = helvetica18, fill = 0)
-    get_news_widget(380, 240, 0, 0, red_Channel, black_Channel, helvetica24, helvetica24)
+    get_header_widget(380, 80, 0, 0, red_Channel, black_Channel, notoSans28, helvetica18)
+    get_news_widget(380, 160, 0, 80, red_Channel, black_Channel, helvetica24, helvetica24)
     get_weather_widget(100, 200, 380, 0, red_Channel, black_Channel, helvetica48)
     get_forecast_widget(100, 600, 380, 180, red_Channel, black_Channel, helvetica24)
-    get_countdown_list(380, 540, 0, 240, red_Channel, black_Channel, notoSans24, notoSans18, notoBold18, config["calendarID1"])
-    #get_calendar_widget(displayWidth, 580, 0, 200, red_Channel, black_Channel, comicSans24, comicSans18)
+    #get_countdown_list(380, 540, 0, 240, red_Channel, black_Channel, notoSans24, notoSans18, notoBold18, config["calendarID1"])
+    get_event_list(380, 540, 0, 240, red_Channel, black_Channel, notoSans24, notoSans18, notoBold18)
 
     logging.info("Displaying")
     epd.init()

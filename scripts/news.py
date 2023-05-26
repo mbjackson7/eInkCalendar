@@ -58,7 +58,7 @@ def get_news_widget(width: int, height: int, x: int, y: int, red_Channel: ImageD
             
         currY = y + 2
         currTime = str(datetime.now())
-        headerString = "NYT " + currTime[:16]
+        headerString = "New York Times"
         if black_Channel.textlength(headerString, font24) < width-4:
             black_Channel.text((x+2, currY), headerString, font = font24, fill = 0)
             currY += 36
