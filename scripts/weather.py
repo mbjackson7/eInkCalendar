@@ -12,7 +12,6 @@ if os.path.exists(libdir):
     sys.path.append(libdir)
 
 import logging
-from waveshare_epd import epd7in5b_V2
 import time
 from datetime import datetime
 from dateutil import tz
@@ -34,7 +33,7 @@ def temp_string(temp: float, units: str):
 def utc_to_local(utc_dt):
     return utc_dt.replace(tzinfo=tz.tzutc()).astimezone(tz.tzlocal())
 
-def get_weather_widget(width: int, height: int, x: int, y: int, red_Channel: ImageDraw, black_Channel: ImageDraw, font48):
+def get_weather_widget(width: int, height: int, x: int, y: int, colorChannels: dict, font48):
     try:   
         # load json file into a dictionary
         with open(os.path.join(scriptsdir, 'config.json')) as json_file:
@@ -57,16 +56,16 @@ def get_weather_widget(width: int, height: int, x: int, y: int, red_Channel: Ima
         tempStr = f"{rawTempStr.split('.')[0]}°"
         tempLen = font48.getlength(tempStr)
         tempX = x + xOffset + (width - tempLen) // 2
-        black_Channel.text((tempX, yOffset + y), tempStr, font = font48, fill = 0)
+        colorChannels["black"].text((tempX, yOffset + y), tempStr, font = font48, fill = 0)
         if height >= 140:
             if os.path.isfile(os.path.join(weatherdir, icon + ".bmp")):
                 iconImg = Image.open(os.path.join(weatherdir, icon + ".bmp")).convert('L')
                 iconImg = PIL.ImageOps.invert(iconImg)
-                black_Channel.bitmap((xOffset + x, yOffset + y + 40), iconImg, fill = 0)
+                colorChannels["black"].bitmap((xOffset + x, yOffset + y + 40), iconImg, fill = 0)
             if os.path.isfile(os.path.join(weatherdir, icon + "r.bmp")):
                 iconImg = Image.open(os.path.join(weatherdir, icon + "r.bmp")).convert('L')
                 iconImg = PIL.ImageOps.invert(iconImg)
-                red_Channel.bitmap((xOffset + x, yOffset + y + 40), iconImg, fill = 0)
+                colorChannels["red"].bitmap((xOffset + x, yOffset + y + 40), iconImg, fill = 0)
           
     except IOError as e:
         logging.info(e)
@@ -76,7 +75,7 @@ def get_weather_widget(width: int, height: int, x: int, y: int, red_Channel: Ima
         epd7in5b_V2.epdconfig.module_exit()
         exit()
 
-def get_forecast_widget(width: int, height: int, x: int, y: int, red_Channel: ImageDraw, black_Channel: ImageDraw, font24):
+def get_forecast_widget(width: int, height: int, x: int, y: int, colorChannels: dict, font24):
     try:   
         # load json file into a dictionary
         with open(os.path.join(scriptsdir, 'config.json')) as json_file:
@@ -112,21 +111,21 @@ def get_forecast_widget(width: int, height: int, x: int, y: int, red_Channel: Im
                     time = time[1:]
                 timeLen = font24.getlength(time)
                 timeX = xOffset + (100 - timeLen) / 2
-                black_Channel.text((timeX + x, yOffset + y + rowOffset), time, font = font24, fill = 0)
+                colorChannels["black"].text((timeX + x, yOffset + y + rowOffset), time, font = font24, fill = 0)
                 rawTempStr = str(temp)
                 tempStr = f"{rawTempStr.split('.')[0]}°"
                 tempLen = font24.getlength(tempStr)
                 tempX = xOffset + (100 - tempLen) / 2
-                black_Channel.text((tempX + x, yOffset + y + 30 + rowOffset), tempStr, font = font24, fill = 0)
+                colorChannels["black"].text((tempX + x, yOffset + y + 30 + rowOffset), tempStr, font = font24, fill = 0)
                 if height >= 140:
                     if os.path.isfile(os.path.join(weatherdir, icon + ".bmp")):
                         iconImg = Image.open(os.path.join(weatherdir, icon + ".bmp")).convert('L')
                         iconImg = PIL.ImageOps.invert(iconImg)
-                        black_Channel.bitmap((xOffset + x, yOffset + y + 40 + rowOffset), iconImg, fill = 0)
+                        colorChannels["black"].bitmap((xOffset + x, yOffset + y + 40 + rowOffset), iconImg, fill = 0)
                     if os.path.isfile(os.path.join(weatherdir, icon + "r.bmp")):
                         iconImg = Image.open(os.path.join(weatherdir, icon + "r.bmp")).convert('L')
                         iconImg = PIL.ImageOps.invert(iconImg)
-                        red_Channel.bitmap((xOffset + x, yOffset + y + 40 + rowOffset), iconImg, fill = 0)
+                        colorChannels["red"].bitmap((xOffset + x, yOffset + y + 40 + rowOffset), iconImg, fill = 0)
                 xOffset += 100
           
     except IOError as e:
@@ -134,5 +133,4 @@ def get_forecast_widget(width: int, height: int, x: int, y: int, red_Channel: Im
         
     except KeyboardInterrupt:    
         logging.info("ctrl + c:")
-        epd7in5b_V2.epdconfig.module_exit()
-        exit()
+        return

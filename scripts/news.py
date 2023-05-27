@@ -10,7 +10,6 @@ if os.path.exists(libdir):
     sys.path.append(libdir)
 
 import logging
-from waveshare_epd import epd7in5b_V2
 import time
 from PIL import Image,ImageDraw,ImageFont
 import traceback
@@ -35,7 +34,7 @@ def split_at_space(s, width, font, channel):
     spaced_line = spaced_line[1:]
     return spaced_line
 
-def get_news_widget(width: int, height: int, x: int, y: int, red_Channel: ImageDraw, black_Channel: ImageDraw, font24, font18):
+def get_news_widget(width: int, height: int, x: int, y: int, colorChannels: dict, font24, font18):
     try:   
         nyt_top_stories_url = 'https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml'
         nyt_politics_url = 'https://rss.nytimes.com/services/xml/rss/nyt/Politics.xml'
@@ -59,18 +58,18 @@ def get_news_widget(width: int, height: int, x: int, y: int, red_Channel: ImageD
         currY = y + 2
         currTime = str(datetime.now())
         headerString = "New York Times"
-        if black_Channel.textlength(headerString, font24) < width-4:
-            black_Channel.text((x+2, currY), headerString, font = font24, fill = 0)
+        if colorChannels["black"].textlength(headerString, font24) < width-4:
+            colorChannels["black"].text((x+2, currY), headerString, font = font24, fill = 0)
             currY += 36
         color = True
         for story in stories:
-            title = split_at_space(story, width, font18, black_Channel)
-            newBottom = black_Channel.multiline_textbbox((x+2, currY), title, font = font18)[3]
+            title = split_at_space(story, width, font18, colorChannels["black"])
+            newBottom = colorChannels["black"].multiline_textbbox((x+2, currY), title, font = font18)[3]
             if newBottom > y+height-2:
                 break
-            black_Channel.text((x+2, currY), title, font = font18, fill = 0)
+            colorChannels["black"].text((x+2, currY), title, font = font18, fill = 0)
             if color:
-                red_Channel.text((x+2, currY), title, font = font18, fill = 0)
+                colorChannels["red"].text((x+2, currY), title, font = font18, fill = 0)
             currY = newBottom + 5
             color = not color
      
@@ -79,5 +78,4 @@ def get_news_widget(width: int, height: int, x: int, y: int, red_Channel: ImageD
         
     except KeyboardInterrupt:    
         logging.info("ctrl + c:")
-        epd7in5b_V2.epdconfig.module_exit()
-        exit()
+        return

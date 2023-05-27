@@ -6,7 +6,6 @@ from datetime import datetime
 import feedparser
 import traceback
 import time
-from waveshare_epd import epd7in5b_V2
 import logging
 import sys
 import os
@@ -55,7 +54,7 @@ def same_month_day(dt1, dt2):
     return dt1.month == dt2.month and dt1.day == dt2.day
 
 
-def get_header_widget(width: int, height: int, x: int, y: int, red_Channel: ImageDraw, black_Channel: ImageDraw, font24, font18):
+def get_header_widget(width: int, height: int, x: int, y: int, colorChannels: dict, font24, font18):
     try:
         with open(os.path.join(scriptsdir, 'config.json')) as json_file:
             config = json.load(json_file)
@@ -72,24 +71,23 @@ def get_header_widget(width: int, height: int, x: int, y: int, red_Channel: Imag
                 headerString = f"Good Morning, {config['name']}!"
 
         headerString = split_at_space(
-            headerString, width, font24, black_Channel)
+            headerString, width, font24, colorChannels["black"])
         print(headerString)
-        textHeight = black_Channel.textsize(headerString, font=font24)[1]
-        black_Channel.text((x+2, currY), headerString, font=font24, fill=0)
+        textHeight = colorChannels["black"].textsize(headerString, font=font24)[1]
+        colorChannels["black"].text((x+2, currY), headerString, font=font24, fill=0)
         currY += textHeight + 2
         #date and time string 
         datetimeStr = datetime.now().strftime("%A, %B %d, %Y %I:%M %p")
-        dateWidth, dateHeight = black_Channel.textsize(datetimeStr, font=font18)
+        dateWidth, dateHeight = colorChannels["black"].textsize(datetimeStr, font=font18)
         if dateWidth > width:
             datetimeStr = datetime.now().strftime("%A, %B %d, %Y")
-            dateWidth, dateHeight = black_Channel.textsize(datetimeStr, font=font18)
+            dateWidth, dateHeight = colorChannels["black"].textsize(datetimeStr, font=font18)
         if dateWidth <= width and dateHeight + currY <= y + height:
-            black_Channel.text((x+2, currY), datetimeStr, font=font18, fill=0)       
+            colorChannels["black"].text((x+2, currY), datetimeStr, font=font18, fill=0)       
 
     except IOError as e:
         logging.info(e)
 
     except KeyboardInterrupt:
         logging.info("ctrl + c:")
-        epd7in5b_V2.epdconfig.module_exit()
-        exit()
+        return

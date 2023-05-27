@@ -11,7 +11,6 @@ if os.path.exists(libdir):
     sys.path.append(libdir)
 
 import logging
-from waveshare_epd import epd7in5b_V2
 import time
 from PIL import Image,ImageDraw,ImageFont
 import traceback
@@ -82,7 +81,7 @@ def military_to_standard(time):
     else:
         return time + " AM"
 
-def get_event_list(width: int, height: int, x: int, y: int, red_Channel: ImageDraw, black_Channel: ImageDraw, font24, font18, font18bold, calendarID: str = "primary"):
+def get_event_list(width: int, height: int, x: int, y: int, colorChannels: dict, font24, font18, font18bold, calendarID: str = "primary"):
     try:
         creds = init_credentials()
         service = build('calendar', 'v3', credentials=creds)
@@ -103,7 +102,7 @@ def get_event_list(width: int, height: int, x: int, y: int, red_Channel: ImageDr
         oldDate = ""
         color = False
         currY = y + 2
-        eventX = black_Channel.textbbox((x+8, currY), "00:00 AM", font = font18)[2] + 8
+        eventX = colorChannels["black"].textbbox((x+8, currY), "00:00 AM", font = font18)[2] + 8
         for event in events:
             start = event['start'].get('dateTime', event['start'].get('date'))
             date = start[5:10]
@@ -118,24 +117,24 @@ def get_event_list(width: int, height: int, x: int, y: int, red_Channel: ImageDr
                 oldDate = date
                 color = not color
                 printDate = True
-                currY = black_Channel.textbbox((x+2, startY), date, font = font24)[3]
+                currY = colorChannels["black"].textbbox((x+2, startY), date, font = font24)[3]
             eventY = currY
-            currY = black_Channel.textbbox((x+8, currY), time, font = font18)[3] 
-            formattedSummary = split_at_space(summary, width - eventX, font24, black_Channel)
-            if black_Channel.textbbox((eventX, eventY), formattedSummary, font = font24)[3] > currY:
-                currY = black_Channel.textbbox((eventX, eventY), formattedSummary, font = font24)[3]
+            currY = colorChannels["black"].textbbox((x+8, currY), time, font = font18)[3] 
+            formattedSummary = split_at_space(summary, width - eventX, font24, colorChannels["black"])
+            if colorChannels["black"].textbbox((eventX, eventY), formattedSummary, font = font24)[3] > currY:
+                currY = colorChannels["black"].textbbox((eventX, eventY), formattedSummary, font = font24)[3]
             if currY <= height + y - 2:
                 if printDate:
                     if color:
-                        black_Channel.text((x+2, startY), date, font = font24, fill = 0)
+                        colorChannels["black"].text((x+2, startY), date, font = font24, fill = 0)
                     else:
-                        red_Channel.text((x+2, startY), date, font = font24, fill = 0)
+                        colorChannels["red"].text((x+2, startY), date, font = font24, fill = 0)
                 if color:
-                    black_Channel.text((x+8, eventY), time, font = font18, fill = 0)
-                    black_Channel.text((eventX, eventY), formattedSummary, font = font24, fill = 0)
+                    colorChannels["black"].text((x+8, eventY), time, font = font18, fill = 0)
+                    colorChannels["black"].text((eventX, eventY), formattedSummary, font = font24, fill = 0)
                 else:
-                    red_Channel.text((x+8, eventY), time, font = font18, fill = 0)
-                    red_Channel.text((eventX, eventY), formattedSummary, font = font24, fill = 0)
+                    colorChannels["red"].text((x+8, eventY), time, font = font18, fill = 0)
+                    colorChannels["red"].text((eventX, eventY), formattedSummary, font = font24, fill = 0)
             currY += 5
 
 
@@ -148,7 +147,7 @@ def get_event_list(width: int, height: int, x: int, y: int, red_Channel: ImageDr
         epd7in5b_V2.epdconfig.module_exit()
         exit()
 
-def get_countdown_list(width: int, height: int, x: int, y: int, red_Channel: ImageDraw, black_Channel: ImageDraw, font24, font18, font18bold, calendarID: str = "primary"):
+def get_countdown_list(width: int, height: int, x: int, y: int, colorChannels: dict, font24, font18, font18bold, calendarID: str = "primary"):
     try:
         creds = init_credentials()
         service = build('calendar', 'v3', credentials=creds)
@@ -181,13 +180,13 @@ def get_countdown_list(width: int, height: int, x: int, y: int, red_Channel: Ima
                 continue
             startY = currY
             daysUntil = int((datetime.strptime(start[0:10], "%Y-%m-%d") - datetime.now()).days) + 1
-            currY = black_Channel.textbbox((x+2, currY), f"{daysUntil} Days Til: {summary}", font = font24)[3] 
-            formattedLine = shorten_string(f"{daysUntil} Days Til: {summary}", width, font24, black_Channel)
+            currY = colorChannels["black"].textbbox((x+2, currY), f"{daysUntil} Days Til: {summary}", font = font24)[3] 
+            formattedLine = shorten_string(f"{daysUntil} Days Til: {summary}", width, font24, colorChannels["black"])
             if currY <= height + y - 2:
                 if color:
-                    black_Channel.text((x+2, startY), formattedLine, font = font24, fill = 0)
+                    colorChannels["black"].text((x+2, startY), formattedLine, font = font24, fill = 0)
                 else:
-                    red_Channel.text((x+2, startY), formattedLine, font = font24, fill = 0)
+                    colorChannels["red"].text((x+2, startY), formattedLine, font = font24, fill = 0)
             currY += 5
             color = not color
 
@@ -196,5 +195,4 @@ def get_countdown_list(width: int, height: int, x: int, y: int, red_Channel: Ima
         
     except KeyboardInterrupt:    
         logging.info("ctrl + c:")
-        epd7in5b_V2.epdconfig.module_exit()
-        exit()
+        return
