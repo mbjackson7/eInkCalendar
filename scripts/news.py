@@ -11,7 +11,7 @@ if os.path.exists(libdir):
 
 import logging
 import time
-from PIL import Image,ImageDraw,ImageFont
+from PIL import Image,ImageDraw,ImageFont, ImageOps
 import traceback
 import feedparser
 from datetime import datetime
@@ -56,11 +56,16 @@ def get_news_widget(width: int, height: int, x: int, y: int, colorChannels: dict
             i += 1
             
         currY = y + 2
-        currTime = str(datetime.now())
-        headerString = "New York Times"
-        if colorChannels["black"].textlength(headerString, font24) < width-4:
-            colorChannels["black"].text((x+2, currY), headerString, font = font24, fill = 0)
-            currY += 36
+        logo = Image.open(os.path.join(picdir, "NYTFull.bmp")).convert('L')
+        logo = ImageOps.invert(logo)
+        basewidth = int(width*0.85)
+        wpercent = (basewidth/float(logo.size[0]))
+        hsize = int((float(logo.size[1])*float(wpercent)))
+        logo = logo.resize((basewidth,hsize), Image.Resampling.NEAREST)
+        
+        colorChannels["black"].bitmap((x + 2, currY), logo, fill = 0)
+        currY += hsize + 3
+                
         color = True
         for story in stories:
             title = split_at_space(story, width, font18, colorChannels["black"])

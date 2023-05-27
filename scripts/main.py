@@ -1,25 +1,33 @@
-#!/usr/bin/python
-# -*- coding:utf-8 -*-
 import sys
 import os
-BYPASS_DISPLAY = True
+import json
+
 picdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'pic')
 fontdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'pic/fonts')
 libdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'lib')
 scriptsdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'scripts')
 screenshotsdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'screenshots')
+
+with open(os.path.join(scriptsdir, 'config.json')) as json_file:
+    config = json.load(json_file) 
+
+TEST_MODE = config["testMode"]
+VERSION = "v0.0.1"
+SCREEN_ORIENTATION = "v"
+EXPORT_SCREENSHOTS = TEST_MODE
+
 if os.path.exists(libdir):
     sys.path.append(libdir)
 
 import logging
-if not BYPASS_DISPLAY:
+if not TEST_MODE:
     from waveshare_epd import epd7in5b_V2
 import time
 from PIL import Image,ImageDraw,ImageFont
 import PIL.ImageOps
 import traceback
 from datetime import datetime
-import json
+
 
 from news import get_news_widget
 from weather import get_weather_widget, get_forecast_widget
@@ -28,14 +36,10 @@ from header import get_header_widget
 
 logging.basicConfig(level=logging.DEBUG)
 
-VERSION = "v0.0.1"
-SCREEN_ORIENTATION = "v"
-EXPORT_SCREENSHOTS = True
-
 
 try:
     print("Starting HUD")
-    if not BYPASS_DISPLAY:
+    if not TEST_MODE:
         logging.info("Displaying HUD")
         epd = epd7in5b_V2.EPD()
 
@@ -72,8 +76,7 @@ try:
     }
     
     logging.info("Prepping Widgets")
-    with open(os.path.join(scriptsdir, 'config.json')) as json_file:
-        config = json.load(json_file)     
+        
 
     colorChannels["black"].text((0, displayHeight-20), VERSION, font = helvetica18, fill = 0)
     get_header_widget(380, 80, 0, 0, colorChannels, notoSans28, helvetica18)
@@ -83,7 +86,7 @@ try:
     #get_countdown_list(380, 540, 0, 240, colorChannels, notoSans24, notoSans18, notoBold18, config["calendarID1"])
     get_event_list(380, 540, 0, 240, colorChannels, notoSans24, notoSans18, notoBold18)
 
-    if not BYPASS_DISPLAY:
+    if not TEST_MODE:
         logging.info("Displaying")
         epd.init()
         epd.display(epd.getbuffer(Limage),epd.getbuffer(Limage_Other))
@@ -107,7 +110,7 @@ except IOError as e:
     
 except KeyboardInterrupt:    
     logging.info("ctrl + c:")
-    if not BYPASS_DISPLAY:
+    if not TEST_MODE:
         epd7in5b_V2.epdconfig.module_exit()
     exit()
 
@@ -115,6 +118,6 @@ except Exception as e:
     logging.info(e)
     print(e)
     input()
-    if not BYPASS_DISPLAY:
+    if not TEST_MODE:
         epd7in5b_V2.epdconfig.module_exit()
     exit()
