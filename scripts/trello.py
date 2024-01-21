@@ -59,21 +59,32 @@ def get_trello_board(width: int, height: int, x: int, y: int, colorChannels: dic
         # Prints the start and name of the next 10 events
         currY = y
         currX = x
+        first = True
         for listID in lists:
-            colorChannels["black"].text((currX, currY), lists[listID]["name"], font = font18bold, fill = 0)
-            currY += 24
+            if not first:
+                colorChannels["black"].line([(currX, y), (currX, y + height)], fill = 0, width = 1)
+            tempLen = font24.getlength(lists[listID]["name"])
+            headerX = currX + (width // len(lists) - tempLen) // 2
+            colorChannels["black"].text((headerX, currY), lists[listID]["name"], font = font24, fill = 0)
+            currY += 36
+            color = 'red'
             for card in lists[listID]["cards"]:
-                cardShort = split_at_space(card, width // len(lists), font18, colorChannels["black"])
-                colorChannels["black"].text((currX, currY), cardShort, font = font18, fill = 0)
+                cardShort = split_at_space(card, width // len(lists) - 4, font18, colorChannels[color])
+                colorChannels[color].text((currX + 4, currY), cardShort, font = font18, fill = 0)
                 for char in cardShort:
                     if char == "\n":
-                        currY += 18
+                        currY += 24
                         break
-                currY += 24
+                currY += 30
                 if currY > y + height:
                     break
+                if color == 'black':
+                    color = 'red'
+                else:
+                    color = 'black'
             currY = y
             currX += width // len(lists)
+            first = False
 
 
 
