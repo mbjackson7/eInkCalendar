@@ -1,0 +1,11 @@
+{
+  "name": "",
+  "birthday": "MM/DD/YYYY",
+  "weatherKey": "",
+  "lat": 0,
+  "long": 0,
+  "units": "",
+  "calendarIDs": ["add as many of these as you need for your layout"],
+  "trelloBoardID": "",
+  "testMode":true
+}
