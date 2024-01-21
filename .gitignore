@@ -13,6 +13,7 @@ credentials.json
 token.json
 
 #
-screenshots
+screenshots/*
+!screenshots/*sample.png
 quickstart.py
 *.pyc
